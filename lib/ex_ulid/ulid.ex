@@ -61,4 +61,32 @@ defmodule ExULID.ULID do
   #   |> elem(1)
   #   |> :binary.decode_unsigned()
   # end
+
+  defp to_integer(<<a::8>>) do
+    a
+  end
+  defp to_integer(<<_::8, _::8>> = data) do
+    <<int::integer-unsigned-16>> = data
+    int
+  end
+  defp to_integer(<<_::8, _::8, _::8>> = data) do
+    <<int::integer-unsigned-24>> = data
+    int
+  end
+  defp to_integer(<<_::8, _::8, _::8, _::8>> = data) do
+    <<int::integer-unsigned-32>> = data
+    int
+  end
+  defp to_integer(<<_::8, _::8, _::8, _::8, _::8>> = data) do
+    <<int::integer-unsigned-40>> = data
+    int
+  end
+  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8>> = data) do
+    <<int::integer-unsigned-48>> = data
+    int
+  end
+  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8, _::8>> = data) do
+    <<int::integer-unsigned-56>> = data
+    int
+  end
 end

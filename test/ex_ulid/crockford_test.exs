@@ -70,12 +70,12 @@ defmodule ExULID.CrockfordTest do
 
     # https://github.com/gbarr/Encode-Base32-Crockford/blob/master/t/base32.t
     test "returns the same decoded values as `gbarr/Encode-Base32-Crockford` library" do
-      assert 2 == decode32("2") |> to_integer()
-      assert 32 == decode32("10") |> to_integer()
-      assert 320 == decode32("A0") |> to_integer()
-      assert 354715840941 == decode32("AABBCCDD") |> to_integer()
-      assert 128 == decode32("40") |> to_integer()
-      assert 500 == decode32("FM") |> to_integer()
+      assert binary_of(2) == decode32("2")
+      assert binary_of(32) == decode32("10")
+      assert binary_of(320) == decode32("A0")
+      assert binary_of(354715840941) == decode32("AABBCCDD")
+      assert binary_of(128) == decode32("40")
+      assert binary_of(500) == decode32("FM")
     end
 
     # https://github.com/jbittel/base32-crockford/blob/master/test.py
@@ -86,14 +86,14 @@ defmodule ExULID.CrockfordTest do
     # https://github.com/dflydev/dflydev-base32-crockford/blob/master/
     # tests/Dflydev/Base32/Crockford/CrockfordTest.php
     test "returns the same decoded value as `dflydev/dflydev-base32-crockford` library" do
-      assert 0 == decode32("0") |> to_integer()
-      assert 1 == decode32("1") |> to_integer()
-      assert 2 == decode32("2") |> to_integer()
-      assert 194 == decode32("62") |> to_integer()
-      assert 456789 == decode32("DY2N") |> to_integer()
-      assert 398373 == decode32("C515") |> to_integer()
-      assert 519571 == decode32("FVCK") |> to_integer()
-      assert 3838385658376483 == decode32("3D2ZQ6TVC93") |> to_integer()
+      assert binary_of(0) == decode32("0")
+      assert binary_of(1) == decode32("1")
+      assert binary_of(2) == decode32("2")
+      assert binary_of(194) == decode32("62")
+      assert binary_of(456789) == decode32("DY2N")
+      assert binary_of(398373) == decode32("C515")
+      assert binary_of(519571) == decode32("FVCK")
+      assert binary_of(3838385658376483) == decode32("3D2ZQ6TVC93")
     end
 
     # Ref: https://github.com/ulid/spec
@@ -107,31 +107,5 @@ defmodule ExULID.CrockfordTest do
     end
   end
 
-  defp to_integer(<<a::8>>) do
-    a
-  end
-  defp to_integer(<<_::8, _::8>> = data) do
-    <<int::integer-unsigned-16>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-24>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-32>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-40>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-48>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-56>> = data
-    int
-  end
+  defp binary_of(integer), do: :binary.encode_unsigned(integer)
 end
