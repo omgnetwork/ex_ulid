@@ -23,11 +23,15 @@ defmodule ExULID.ULID do
   end
 
   @doc """
-  Encode the data and format it to a specific string length
+  Encode the data and format it to a specific string length.
   """
   def encode_formatted(data, str_length) do
-    encoded = encode32(data)
+    data
+    |> encode32()
+    |> format_encoded(str_length)
+  end
 
+  def format_encoded(encoded, str_length) do
     case String.length(encoded) do
       n when n > str_length ->
         String.slice(encoded, -str_length..-1)
