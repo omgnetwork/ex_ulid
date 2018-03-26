@@ -22,6 +22,12 @@ Instead, herein is proposed ULID:
 - No special characters (URL safe)
 - Monotonic sort order (correctly detects and handles the same millisecond)
 
+## Goodies that comes with this libraries
+
+- It uses binary operations (so it's super [fast](#benchmark)!)
+- It can decode the timestamp back from the ULID
+- It includes tests from other language's implementations, ensuring the consistency & correctness of the ULID produced.
+
 ## Installation
 
 Add ExULID as a dependency in your project's `mix.exs`:
