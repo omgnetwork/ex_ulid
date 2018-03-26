@@ -7,7 +7,6 @@ defmodule ExULID.Crockford do
   @encoding '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
 
   defmodule UnknownCharacterError do
-    # defexception message: "One of the given character is not part of the encoder's alphabet"
     defexception [:message]
 
     def exception(char) do
@@ -66,10 +65,10 @@ defmodule ExULID.Crockford do
     end
   end
 
-  def decode32("0"), do: <<0>>
+  def decode32("0"), do: {:ok, <<0>>}
   def decode32(string) do
     string = String.to_charlist(string)
-    decode32("", string)
+    {:ok, decode32("", string)}
   rescue
     e in UnknownCharacterError -> {:error, e.message}
   end

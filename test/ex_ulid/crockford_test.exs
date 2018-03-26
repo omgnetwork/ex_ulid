@@ -58,42 +58,42 @@ defmodule ExULID.CrockfordTest do
 
   describe "decode32/1" do
     test "returns the encoded value" do
-      assert "" == decode32("")
-      assert "o" == decode32("3F")
-      assert "om" == decode32("VVD")
-      assert "omi" == decode32("6YVB9")
-      assert "omis" == decode32("1QPTTBK")
-      assert "omise" == decode32("DXPPJWV5")
-      assert "omiseg" == decode32("3FDNMQ6SB7")
-      assert "omisego" == decode32("VVDD5SPASVF")
+      assert {:ok, ""} == decode32("")
+      assert {:ok, "o"} == decode32("3F")
+      assert {:ok, "om"} == decode32("VVD")
+      assert {:ok, "omi"} == decode32("6YVB9")
+      assert {:ok, "omis"} == decode32("1QPTTBK")
+      assert {:ok, "omise"} == decode32("DXPPJWV5")
+      assert {:ok, "omiseg"} == decode32("3FDNMQ6SB7")
+      assert {:ok, "omisego"} == decode32("VVDD5SPASVF")
     end
 
     # https://github.com/gbarr/Encode-Base32-Crockford/blob/master/t/base32.t
     test "returns the same decoded values as `gbarr/Encode-Base32-Crockford` library" do
-      assert binary_of(2) == decode32("2")
-      assert binary_of(32) == decode32("10")
-      assert binary_of(320) == decode32("A0")
-      assert binary_of(354715840941) == decode32("AABBCCDD")
-      assert binary_of(128) == decode32("40")
-      assert binary_of(500) == decode32("FM")
+      assert {:ok, binary_of(2)} == decode32("2")
+      assert {:ok, binary_of(32)} == decode32("10")
+      assert {:ok, binary_of(320)} == decode32("A0")
+      assert {:ok, binary_of(354715840941)} == decode32("AABBCCDD")
+      assert {:ok, binary_of(128)} == decode32("40")
+      assert {:ok, binary_of(500)} == decode32("FM")
     end
 
     # https://github.com/jbittel/base32-crockford/blob/master/test.py
     test "returns the same decoded values as `jbittel/base32-crockford` library" do
-      assert :binary.encode_unsigned(1234) == decode32("16J")
+      assert {:ok, :binary.encode_unsigned(1234)} == decode32("16J")
     end
 
     # https://github.com/dflydev/dflydev-base32-crockford/blob/master/
     # tests/Dflydev/Base32/Crockford/CrockfordTest.php
     test "returns the same decoded value as `dflydev/dflydev-base32-crockford` library" do
-      assert binary_of(0) == decode32("0")
-      assert binary_of(1) == decode32("1")
-      assert binary_of(2) == decode32("2")
-      assert binary_of(194) == decode32("62")
-      assert binary_of(456789) == decode32("DY2N")
-      assert binary_of(398373) == decode32("C515")
-      assert binary_of(519571) == decode32("FVCK")
-      assert binary_of(3838385658376483) == decode32("3D2ZQ6TVC93")
+      assert {:ok, binary_of(0)} == decode32("0")
+      assert {:ok, binary_of(1)} == decode32("1")
+      assert {:ok, binary_of(2)} == decode32("2")
+      assert {:ok, binary_of(194)} == decode32("62")
+      assert {:ok, binary_of(456789)} == decode32("DY2N")
+      assert {:ok, binary_of(398373)} == decode32("C515")
+      assert {:ok, binary_of(519571)} == decode32("FVCK")
+      assert {:ok, binary_of(3838385658376483)} == decode32("3D2ZQ6TVC93")
     end
 
     # Ref: https://github.com/ulid/spec
