@@ -5,6 +5,9 @@ defmodule ExULID.ULID do
   """
   import ExULID.Crockford
 
+  defmodule InvalidTimeError, do: defexception [:message]
+  defmodule InvalidULIDError, do: defexception [:message]
+
   @doc """
   Generates a ULID.
   """
@@ -19,19 +22,31 @@ defmodule ExULID.ULID do
   """
   def generate_at(time) do
     rand = :crypto.strong_rand_bytes(10) # 10 bytes = 80 bits
-    encode_formatted(time, 10) <> encode_formatted(rand, 16)
+    encode_time(time) <> encode(rand, 16)
+  rescue
+    e in InvalidTimeError -> {:error, e.message}
   end
 
-  @doc """
-  Encode the data and format it to a specific string length.
-  """
-  def encode_formatted(data, str_length) do
+  defp encode_time(time) when not is_integer(time) do
+    raise InvalidTimeError, message: "time must be an integer, got #{inspect(time)}"
+  end
+  defp encode_time(time) when time < 0 do
+    raise InvalidTimeError, message: "time cannot be negative, got #{inspect(time)}"
+  end
+  defp encode_time(time) when time >= 281474976710656 do
+    raise InvalidTimeError, message: "time cannot be >= 2^48 milliseconds, got #{inspect(time)}"
+  end
+  defp encode_time(time) do
+    encode(time, 10)
+  end
+
+  defp encode(data, str_length) do
     data
     |> encode32()
     |> format_encoded(str_length)
   end
 
-  def format_encoded(encoded, str_length) do
+  defp format_encoded(encoded, str_length) do
     case String.length(encoded) do
       n when n > str_length ->
         String.slice(encoded, -str_length..-1)
@@ -42,51 +57,43 @@ defmodule ExULID.ULID do
     end
   end
 
-  # @doc """
-  # Decodes the given ULID into a tuple of `{time, random_id}`,
-  # where `time` is the embedded unix timestamp in milliseconds.
-  # """
-  # def decode(ulid) do
-  #   {decode_time(ulid), String.slice(ulid, 10..25)}
-  # end
+  @doc """
+  Decodes the given ULID into a tuple of `{time, randomess}`,
+  where `time` is the embedded unix timestamp in milliseconds.
+  """
+  def decode(ulid) when byte_size(ulid) != 26 do
+    {:error, "the ULID must be 26 characters long, got #{inspect(ulid)}"}
+  end
+  def decode(ulid) do
+    {decode_time(ulid), String.slice(ulid, 10..25)}
+  rescue
+    e in InvalidULIDError -> {:error, e.message}
+  end
 
-  # @doc """
-  # Decodes the given ULID and returns only the embedded unix timestamp in milliseconds.
-  # """
-  # def decode_time(ulid) do
-  #   ulid
-  #   |> String.slice(0..9)
-  #   |> String.pad_trailing(16, "=")
-  #   |> decode32()
-  #   |> elem(1)
-  #   |> :binary.decode_unsigned()
-  # end
+  defp decode_time(ulid) do
+    decoded =
+      ulid
+      |> String.slice(0..9)
+      |> decode32()
 
-  defp to_integer(<<a::8>>) do
-    a
+    case decoded do
+      {:ok, binary} ->
+        binary_to_time(binary)
+      {:error, _} = error ->
+        error
+    end
   end
-  defp to_integer(<<_::8, _::8>> = data) do
-    <<int::integer-unsigned-16>> = data
-    int
+
+  # Rejects decoded time that is greater than or equal to 2 ^ 48
+  # because it would not have been encodable in the first place.
+  defp binary_to_time(binary) when is_binary(binary) do
+    binary
+    |> :binary.decode_unsigned()
+    |> binary_to_time()
   end
-  defp to_integer(<<_::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-24>> = data
-    int
+  defp binary_to_time(decoded) when is_integer(decoded) and decoded >= 281474976710656 do
+    raise InvalidULIDError,
+          message: "the decoded time cannot be greater than 2^48, got #{inspect(decoded)}"
   end
-  defp to_integer(<<_::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-32>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-40>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-48>> = data
-    int
-  end
-  defp to_integer(<<_::8, _::8, _::8, _::8, _::8, _::8, _::8>> = data) do
-    <<int::integer-unsigned-56>> = data
-    int
-  end
+  defp binary_to_time(decoded) when is_integer(decoded), do: decoded
 end
