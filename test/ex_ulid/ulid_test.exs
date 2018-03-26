@@ -65,7 +65,7 @@ defmodule ExULID.UUIDTest do
     end
 
     # https://github.com/ulid/javascript/blob/master/test.js
-    test "accepts the maximum allowed timestamp" do
+    test "accepts the maximum allowed timestamp ((2 ^ 48) - 1)" do
       assert {281474976710655, _} = decode("7ZZZZZZZZZZZZZZZZZZZZZZZZZ")
     end
 

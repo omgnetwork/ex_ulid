@@ -8,6 +8,8 @@ defmodule ExULID.ULID do
   defmodule InvalidTimeError, do: defexception [:message]
   defmodule InvalidULIDError, do: defexception [:message]
 
+  @max_time 281474976710655 # (2 ^ 48) - 1
+
   @doc """
   Generates a ULID.
   """
@@ -33,7 +35,7 @@ defmodule ExULID.ULID do
   defp encode_time(time) when time < 0 do
     raise InvalidTimeError, message: "time cannot be negative, got #{inspect(time)}"
   end
-  defp encode_time(time) when time >= 281474976710656 do
+  defp encode_time(time) when time > @max_time do
     raise InvalidTimeError, message: "time cannot be >= 2^48 milliseconds, got #{inspect(time)}"
   end
   defp encode_time(time) do
@@ -71,29 +73,24 @@ defmodule ExULID.ULID do
   end
 
   defp decode_time(ulid) do
-    decoded =
-      ulid
-      |> String.slice(0..9)
-      |> decode32()
-
-    case decoded do
-      {:ok, binary} ->
-        binary_to_time(binary)
-      {:error, _} = error ->
-        error
-    end
+    ulid
+    |> String.slice(0..9)
+    |> decode32()
+    |> binary_to_time()
   end
 
   # Rejects decoded time that is greater than or equal to 2 ^ 48
   # because it would not have been encodable in the first place.
-  defp binary_to_time(binary) when is_binary(binary) do
+  defp binary_to_time({:ok, binary}) do
     binary
     |> :binary.decode_unsigned()
-    |> binary_to_time()
+    |> validate_time()
   end
-  defp binary_to_time(decoded) when is_integer(decoded) and decoded >= 281474976710656 do
+  defp binary_to_time({:error, _} = error), do: error
+
+  defp validate_time(decoded) when is_integer(decoded) and decoded > @max_time do
     raise InvalidULIDError,
           message: "the decoded time cannot be greater than 2^48, got #{inspect(decoded)}"
   end
-  defp binary_to_time(decoded) when is_integer(decoded), do: decoded
+  defp validate_time(decoded) when is_integer(decoded), do: decoded
 end
