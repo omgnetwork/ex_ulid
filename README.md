@@ -59,6 +59,48 @@ ExULID.ULID.decode!("01ARYZ6S41QJQECH4KPG6SEF3Y")
 #=> {1469918176385, "QJQECH4KPG6SEF3Y"}
 ```
 
+## Benchmark
+
+```
+$ mix run bench/run.exs
+Operating System: macOS
+CPU Information: Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz
+Number of Available Cores: 4
+Available memory: 16 GB
+Elixir 1.6.4
+Erlang 20.2.4
+Benchmark suite executing with the following configuration:
+warmup: 2 s
+time: 5 s
+parallel: 1
+inputs: none specified
+Estimated total run time: 7 s
+
+Benchmarking encode...
+
+Name             ips        average  deviation         median         99th %
+encode       52.08 K       19.20 μs   ±116.33%          16 μs          60 μs
+
+
+Operating System: macOS
+CPU Information: Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz
+Number of Available Cores: 4
+Available memory: 16 GB
+Elixir 1.6.4
+Erlang 20.2.4
+Benchmark suite executing with the following configuration:
+warmup: 2 s
+time: 5 s
+parallel: 1
+inputs: none specified
+Estimated total run time: 7 s
+
+Benchmarking decode...
+
+Name             ips        average  deviation         median         99th %
+decode       18.86 K       53.03 μs    ±24.71%          50 μs         100 μs
+```
+
 ## TODO
 - [Monotonicity](https://github.com/ulid/spec#monotonicity) generator
 
