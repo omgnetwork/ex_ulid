@@ -55,7 +55,7 @@ ExULID.ULID.generate_at(1469918176385)
 Decode the ULID back to get the timestamp and randomness:
 
 ```ex
-ExULID.ULID.decode!("01ARYZ6S41QJQECH4KPG6SEF3Y")
+ExULID.ULID.decode("01ARYZ6S41QJQECH4KPG6SEF3Y")
 #=> {1469918176385, "QJQECH4KPG6SEF3Y"}
 ```
 
