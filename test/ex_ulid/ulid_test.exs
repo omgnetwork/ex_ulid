@@ -21,15 +21,15 @@ defmodule ExULID.UUIDTest do
     end
   end
 
-  describe "generate_at/1" do
+  describe "generate/1" do
     # https://github.com/ulid/javascript/blob/master/test.js
     test "returns the expected encoded time component" do
-      assert "01ARYZ6S41" <> _ = generate_at(1469918176385)
+      assert "01ARYZ6S41" <> _ = generate(1469918176385)
     end
 
     # https://github.com/ulid/javascript/blob/master/test.js (test value edited)
     test "returns zero-padded result" do
-      assert "0000000001" <> _ = generate_at(1)
+      assert "0000000001" <> _ = generate(1)
     end
   end
 
@@ -40,17 +40,17 @@ defmodule ExULID.UUIDTest do
         |> :math.pow(48)
         |> round()
 
-      assert {:error, "time cannot be >= 2^48 milliseconds, got 281474976710656"} = generate_at(overflowed_time)
+      assert {:error, "time cannot be >= 2^48 milliseconds, got 281474976710656"} = generate(overflowed_time)
     end
 
     test "throws error if time is not an integer" do
-      assert {:error, ~s(time must be an integer, got "string")} = generate_at("string")
-      assert {:error, ~s(time must be an integer, got "123456")} = generate_at("123456")
-      assert {:error, ~s(time must be an integer, got 100.1)} = generate_at(100.1)
+      assert {:error, ~s(time must be an integer, got "string")} = generate("string")
+      assert {:error, ~s(time must be an integer, got "123456")} = generate("123456")
+      assert {:error, ~s(time must be an integer, got 100.1)} = generate(100.1)
     end
 
     test "throws error if time is negative" do
-      assert {:error, "time cannot be negative, got -1"} = generate_at(-1)
+      assert {:error, "time cannot be negative, got -1"} = generate(-1)
     end
   end
 

@@ -32,10 +32,10 @@ defmodule ExULID.Crockford do
     |> encode32()
   end
   # Pad or remove any leading zero
-  def encode32(""), do: ""
+  def encode32(""), do: {:ok, ""}
   def encode32(data) do
     data = pad_bitlength(data, @bits)
-    encode32("", data)
+    {:ok, encode32("", data)}
   end
 
   # Ignore leading zeros unless it's the only character

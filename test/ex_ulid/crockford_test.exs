@@ -4,55 +4,55 @@ defmodule ExULID.CrockfordTest do
 
   describe "encode32/1" do
     test "returns the encoded string" do
-      assert "" == encode32("")
-      assert "3F" == encode32("o")
-      assert "VVD" == encode32("om")
-      assert "6YVB9" == encode32("omi")
-      assert "1QPTTBK" == encode32("omis")
-      assert "DXPPJWV5" == encode32("omise")
-      assert "3FDNMQ6SB7" == encode32("omiseg")
-      assert "VVDD5SPASVF" == encode32("omisego")
+      assert {:ok, ""} == encode32("")
+      assert {:ok, "3F"} == encode32("o")
+      assert {:ok, "VVD"} == encode32("om")
+      assert {:ok, "6YVB9"} == encode32("omi")
+      assert {:ok, "1QPTTBK"} == encode32("omis")
+      assert {:ok, "DXPPJWV5"} == encode32("omise")
+      assert {:ok, "3FDNMQ6SB7"} == encode32("omiseg")
+      assert {:ok, "VVDD5SPASVF"} == encode32("omisego")
     end
 
     test "returns the encoded binary" do
-      assert "A3CP3TKJZCY4H" == encode32(<<161, 178, 195, 212, 229, 246, 120, 145>>)
+      assert {:ok, "A3CP3TKJZCY4H"} == encode32(<<161, 178, 195, 212, 229, 246, 120, 145>>)
     end
 
     test "returns the encoded value for an 80-bit binary" do
-      assert "PJS32CNANR186SDJ" ==
+      assert {:ok, "PJS32CNANR186SDJ"} ==
                encode32(<<180, 178, 49, 50, 170, 174, 2, 131, 101, 178>>)
     end
 
     test "returns empty string when given empty string" do
-      assert "" == encode32("")
+      assert {:ok, ""} == encode32("")
     end
 
     # https://github.com/gbarr/Encode-Base32-Crockford/blob/master/t/base32.t
     test "returns the same encoded values as `gbarr/Encode-Base32-Crockford` library" do
-      assert "2" == encode32(2)
-      assert "10" == encode32(32)
-      assert "A0" == encode32(320)
-      assert "AABBCCDD" == encode32(354715840941)
-      assert "40" == encode32(128)
-      assert "FM" == encode32(500)
+      assert {:ok, "2"} == encode32(2)
+      assert {:ok, "10"} == encode32(32)
+      assert {:ok, "A0"} == encode32(320)
+      assert {:ok, "AABBCCDD"} == encode32(354715840941)
+      assert {:ok, "40"} == encode32(128)
+      assert {:ok, "FM"} == encode32(500)
     end
 
     # https://github.com/jbittel/base32-crockford/blob/master/test.py
     test "returns the same encoded values as `jbittel/base32-crockford` library" do
-      assert "16J" == encode32(1234)
+      assert {:ok, "16J"} == encode32(1234)
     end
 
     # https://github.com/dflydev/dflydev-base32-crockford/blob/master/
     # tests/Dflydev/Base32/Crockford/CrockfordTest.php
     test "returns the same encoded value as `dflydev/dflydev-base32-crockford` library" do
-      assert "0" == encode32(0)
-      assert "1" == encode32(1)
-      assert "2" == encode32(2)
-      assert "62" == encode32(194)
-      assert "DY2N" == encode32(456789)
-      assert "C515" == encode32(398373)
-      assert "FVCK" == encode32(519571)
-      assert "3D2ZQ6TVC93" == encode32(3838385658376483)
+      assert {:ok, "0"} == encode32(0)
+      assert {:ok, "1"} == encode32(1)
+      assert {:ok, "2"} == encode32(2)
+      assert {:ok, "62"} == encode32(194)
+      assert {:ok, "DY2N"} == encode32(456789)
+      assert {:ok, "C515"} == encode32(398373)
+      assert {:ok, "FVCK"} == encode32(519571)
+      assert {:ok, "3D2ZQ6TVC93"} == encode32(3838385658376483)
     end
   end
 

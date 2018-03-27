@@ -54,7 +54,7 @@ ExULID.ULID.generate()
 Generate a ULID for a specific time:
 
 ```ex
-ExULID.ULID.generate_at(1469918176385)
+ExULID.ULID.generate(1469918176385)
 #=> "01ARYZ6S41QJQECH4KPG6SEF3Y"
 ```
 
