@@ -10,6 +10,7 @@ defmodule ExULID.ULID do
   @doc """
   Generates a ULID.
   """
+  @spec generate() :: {:ok, String.t}
   def generate do
     :milli_seconds
     |> :os.system_time()
@@ -19,6 +20,7 @@ defmodule ExULID.ULID do
   @doc """
   Generates a ULID at the given timestamp (in millseconds).
   """
+  @spec generate(integer) :: {:ok, String.t} | {:error, String.t}
   def generate(time) when not is_integer(time) do
     {:error, "time must be an integer, got #{inspect(time)}"}
   end
@@ -54,24 +56,31 @@ defmodule ExULID.ULID do
   end
 
   @doc """
+  Encodes a binary ULID into string.
+  """
+  @spec encode(<<_::128>>) :: {:ok, String.t} | {:error, String.t}
+  def encode(<<_::128>> = binary_ulid), do: encode32(binary_ulid)
+
+  @doc """
   Decodes the given ULID into a tuple of `{time, randomess}`,
   where `time` is the embedded unix timestamp in milliseconds.
   """
-  def decode(<<time::bytes-size(10), id::bytes-size(16)>>) do
+  @spec decode(String.t) :: {:ok, <<_::128>>} | {:error, String.t}
+  def decode(<<time::bytes-size(10), rand::bytes-size(16)>>) do
     case decode_time(time) do
       {:error, _} = error ->
         error
       decoded_time ->
-        {decoded_time, id}
+        {decoded_time, rand}
     end
   end
   def decode(ulid) do
     {:error, "the ULID must be 26 characters long, got #{inspect(ulid)}"}
   end
 
-  defp decode_time(ulid) do
+  defp decode_time(string_ulid) do
     decoded =
-      ulid
+      string_ulid
       |> String.slice(0..9)
       |> decode32()
 
