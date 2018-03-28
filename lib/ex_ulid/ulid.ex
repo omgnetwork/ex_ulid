@@ -32,7 +32,7 @@ defmodule ExULID.ULID do
   end
   def generate(time) do
     rand = :crypto.strong_rand_bytes(10)
-    encode(time, 10) <> encode(rand, 16)
+    {:ok, encode(time, 10) <> encode(rand, 16)}
   end
 
   defp encode(data, str_length) do

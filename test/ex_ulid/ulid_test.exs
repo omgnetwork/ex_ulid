@@ -4,12 +4,12 @@ defmodule ExULID.UUIDTest do
 
   describe "generate/0" do
     test "returns a ULID with 26 characters" do
-      ulid = generate()
+      {:ok, ulid} = generate()
       assert 26 == String.length(ulid)
     end
 
     test "returns a ULID with the current timestamp" do
-      ulid                 = generate()
+      {:ok, ulid}          = generate()
       {time, _rand}        = decode(ulid)
       confidence_threshold = 100 # 0.1 seconds
 
@@ -24,12 +24,12 @@ defmodule ExULID.UUIDTest do
   describe "generate/1" do
     # https://github.com/ulid/javascript/blob/master/test.js
     test "returns the expected encoded time component" do
-      assert "01ARYZ6S41" <> _ = generate(1469918176385)
+      assert {:ok, "01ARYZ6S41" <> _} = generate(1469918176385)
     end
 
     # https://github.com/ulid/javascript/blob/master/test.js (test value edited)
     test "returns zero-padded result" do
-      assert "0000000001" <> _ = generate(1)
+      assert {:ok, "0000000001" <> _} = generate(1)
     end
   end
 
