@@ -85,7 +85,7 @@ Estimated total run time: 7 s
 Benchmarking encode...
 
 Name             ips        average  deviation         median         99th %
-encode       52.08 K       19.20 μs   ±116.33%          16 μs          60 μs
+encode       50.99 K       19.61 μs   ±111.56%          16 μs          60 μs
 
 
 Operating System: macOS
@@ -104,7 +104,7 @@ Estimated total run time: 7 s
 Benchmarking decode...
 
 Name             ips        average  deviation         median         99th %
-decode       18.86 K       53.03 μs    ±24.71%          50 μs         100 μs
+decode       21.30 K       46.94 μs    ±21.03%          44 μs          81 μs
 ```
 
 ## TODO
