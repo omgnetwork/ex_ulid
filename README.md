@@ -108,6 +108,8 @@ decode       18.86 K       53.03 μs    ±24.71%          50 μs         100 μs
 ```
 
 ## TODO
+- Detect invalid characters
+- Validates time boundary for `Ecto.ULID.cast/1`
 - [Monotonicity](https://github.com/ulid/spec#monotonicity) generator
 
 # License

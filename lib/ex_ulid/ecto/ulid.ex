@@ -3,7 +3,7 @@ defmodule ExULID.Ecto.ULID do
   An Ecto type for UUIDs strings.
   """
   @behaviour Ecto.Type
-  alias ExULID.ULID, as: Generator
+  alias ExULID.ULID
 
   @doc """
   The Ecto type.
@@ -12,53 +12,52 @@ defmodule ExULID.Ecto.ULID do
   def type, do: :binary_id
 
   @doc """
-  Casts the given input to binary ULID.
+  Casts the given input to a string ULID.
 
-  This function is called on external input and can return any type,
-  as long as the `dump/1` function is able to convert the returned
-  value back into an Ecto native type. There are two situations where
-  this function is called:
-
-    1. When casting values by `Ecto.Changeset`
-    2. When passing arguments to `Ecto.Query`
+  Even if the input is already binary ULID, it casts back to a string.
+  This is so that the casted value can always be retrieved in its human-readable format.
   """
-  @spec cast(any) :: {:ok, String.t} | :error
-  def cast(string) when byte_size(string) == 26 do
-    # TODO: Check that the string has valid decoded value
-    {:ok, :binary.bin_to_list(string)}
+  @spec cast(String.t | <<_::128>>) :: {:ok, String.t} | {:error, String.t}
+  def cast(string_uuid) when is_binary(string_uuid) and byte_size(string_uuid) == 26 do
+    {:ok, string_uuid}
   end
-  def cast(binary) when byte_size(binary) == 24 do
-    # TODO: Check that the binary has valid value, then convert to string
-    {:ok, binary}
+  def cast(<<_::128>> = binary_uuid) do
+    ULID.encode(binary_uuid)
   end
   def cast(_), do: :error
 
   @doc """
   Converts the binary ULID retrieved from database to a string ULID.
-
-  This function is called when loading data from the database and
-  receive an Ecto native type. It can return any type, as long as
-  the `dump/1` function is able to convert the returned value back
-  into an Ecto native type.
   """
   @spec load(<<_::128>>) :: {:ok, String.t}
-  def load(<<_::128>> = binary_ulid), do: Generator.encode(binary_ulid)
+  def load(<<_::128>> = binary_ulid) do
+    ULID.encode(binary_ulid)
+  end
+  def load(_), do: :error
 
   @doc """
-  Converts the data into an Ecto native type (i.e. :binary_id).
+  Converts the data into an Ecto native type (i.e. :binary_id),
+  ready to be stored.
 
-  This function is called with any term that was stored in the struct
-  and it needs to validate them and convert it to an Ecto native type.
+  This function does not validate the content of the ULID as it should have
+  been validated since `cast/1`.
   """
   @spec dump(any) :: {:ok, binary} | {:error, String.t}
-  def dump(string) when byte_size(string) == 26 do
-    # TODO: The string at this point shoudl already be valid. Just need to convert it to binary
-    {:ok, :binary.bin_to_list(string)}
+  def dump(string) when is_binary(string) and byte_size(string) == 26 do
+    ULID.to_binary(string)
   end
-  def dump(_), do: {:error, "ULID must be exactly 26 characters"}
+  def dump(_), do: :error
+
+  @doc """
+  Generates a string ULID.
+  """
+  @spec generate() :: {:ok, String.t}
+  def generate do
+    {:ok, ulid} = ULID.generate()
+    ulid
+  end
 
   # Callback invoked by autogenerate fields.
   @doc false
-  @spec autogenerate() :: {:ok, String.t}
-  def autogenerate, do: Generator.generate()
+  def autogenerate, do: generate()
 end

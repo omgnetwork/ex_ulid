@@ -1,5 +1,5 @@
 defmodule ExULID.UUIDTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import ExULID.ULID
 
   describe "generate/0" do

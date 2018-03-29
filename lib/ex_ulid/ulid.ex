@@ -3,7 +3,7 @@ defmodule ExULID.ULID do
   This module provides data encoding and decoding functions
   according to [ULID](https://github.com/ulid/spec).
   """
-  import ExULID.Crockford
+  alias ExULID.Crockford
 
   @max_time 281474976710655 # (2 ^ 48) - 1
 
@@ -36,7 +36,7 @@ defmodule ExULID.ULID do
   end
 
   defp encode(data, str_length) do
-    case encode32(data) do
+    case Crockford.encode32(data) do
       {:ok, encoded} ->
         format_encoded(encoded, str_length)
       {:error, _} = error ->
@@ -59,7 +59,9 @@ defmodule ExULID.ULID do
   Encodes a binary ULID into string.
   """
   @spec encode(<<_::128>>) :: {:ok, String.t} | {:error, String.t}
-  def encode(<<_::128>> = binary_ulid), do: encode32(binary_ulid)
+  def encode(<<binary_time::48, binary_rand::80>>) do
+    {:ok, encode(binary_time, 10) <> encode(binary_rand, 16)}
+  end
 
   @doc """
   Decodes the given ULID into a tuple of `{time, randomess}`,
@@ -78,13 +80,16 @@ defmodule ExULID.ULID do
     {:error, "the ULID must be 26 characters long, got #{inspect(ulid)}"}
   end
 
-  defp decode_time(string_ulid) do
-    decoded =
-      string_ulid
-      |> String.slice(0..9)
-      |> decode32()
+  @doc """
+  Converts a string ULID to binary ULID.
+  """
+  @spec to_binary(String.t) :: {:ok, binary}
+  def to_binary(string) when is_binary(string) and byte_size(string) == 26 do
+    Crockford.decode32(string)
+  end
 
-    case decoded do
+  defp decode_time(string_time) do
+    case Crockford.decode32(string_time) do
       {:ok, decoded} ->
         binary_to_time(decoded)
       {:error, _} = error ->
