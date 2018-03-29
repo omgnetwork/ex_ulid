@@ -22,6 +22,94 @@ Instead, herein is proposed ULID:
 - No special characters (URL safe)
 - Monotonic sort order (correctly detects and handles the same millisecond)
 
+## Goodies that comes with this libraries
+
+- It uses binary operations (so it's super [fast](#benchmark)!)
+- It can decode the timestamp back from the ULID
+- It includes tests from other language's implementations, ensuring the consistency & correctness of the ULID produced.
+
+## Installation
+
+Add ExULID as a dependency in your project's `mix.exs`:
+
+```
+def deps do
+  [
+    {:ex_ulid, github: "omisego/ex_ulid"}
+  ]
+end
+```
+
+Then run `mix deps.get` to resolve and install it.
+
+## Usage
+
+Generate a ULID with the current time:
+
+```ex
+ExULID.ULID.generate()
+#=> "01C9GJZZ3D530PE8Q0ZYV5HJ9K"
+```
+
+Generate a ULID for a specific time:
+
+```ex
+ExULID.ULID.generate(1469918176385)
+#=> "01ARYZ6S41QJQECH4KPG6SEF3Y"
+```
+
+Decode the ULID back to get the timestamp and randomness:
+
+```ex
+ExULID.ULID.decode("01ARYZ6S41QJQECH4KPG6SEF3Y")
+#=> {1469918176385, "QJQECH4KPG6SEF3Y"}
+```
+
+## Benchmark
+
+```
+$ mix run bench/run.exs
+Operating System: macOS
+CPU Information: Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz
+Number of Available Cores: 4
+Available memory: 16 GB
+Elixir 1.6.4
+Erlang 20.2.4
+Benchmark suite executing with the following configuration:
+warmup: 2 s
+time: 5 s
+parallel: 1
+inputs: none specified
+Estimated total run time: 7 s
+
+Benchmarking encode...
+
+Name             ips        average  deviation         median         99th %
+encode       52.08 K       19.20 μs   ±116.33%          16 μs          60 μs
+
+
+Operating System: macOS
+CPU Information: Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz
+Number of Available Cores: 4
+Available memory: 16 GB
+Elixir 1.6.4
+Erlang 20.2.4
+Benchmark suite executing with the following configuration:
+warmup: 2 s
+time: 5 s
+parallel: 1
+inputs: none specified
+Estimated total run time: 7 s
+
+Benchmarking decode...
+
+Name             ips        average  deviation         median         99th %
+decode       18.86 K       53.03 μs    ±24.71%          50 μs         100 μs
+```
+
+## TODO
+- [Monotonicity](https://github.com/ulid/spec#monotonicity) generator
+
 # License
 
 ExULID is released under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
