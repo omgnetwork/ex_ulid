@@ -2,6 +2,12 @@
 Universally Unique Lexicographically Sortable Identifier (ULID) in Elixir.
 Implemented according to [ulid/spec](https://github.com/ulid/spec).
 
+## Goodies that come with this libraries
+
+- It uses binary operations (so it's super [fast](#benchmark)!)
+- It can decode the timestamp back from the ULID
+- It includes tests from other language's implementations, ensuring consistency with other implementations
+
 ## Why ULID?
 
 UUID can be suboptimal for many uses-cases because:
@@ -21,12 +27,6 @@ Instead, herein is proposed ULID:
 - Case insensitive
 - No special characters (URL safe)
 - Monotonic sort order (correctly detects and handles the same millisecond)
-
-## Goodies that comes with this libraries
-
-- It uses binary operations (so it's super [fast](#benchmark)!)
-- It can decode the timestamp back from the ULID
-- It includes tests from other language's implementations, ensuring the consistency & correctness of the ULID produced.
 
 ## Installation
 
