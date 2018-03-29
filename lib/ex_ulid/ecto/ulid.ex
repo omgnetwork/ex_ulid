@@ -1,6 +1,30 @@
 defmodule ExULID.Ecto.ULID do
   @moduledoc """
   An Ecto type for UUIDs strings.
+
+  # Example
+
+  First, add a new migration to add the new field with the `binary_id` type:
+
+      defmodule MyRepo.Migrations.CreateSomeTable do
+        use Ecto.Migration
+
+        def change do
+          create table("some_tables") do
+            add :the_ulid_field, :binary_id
+          end
+        end
+      end
+
+  Then add the new field to the schema:
+
+      defmodule SomeSchema do
+        use Ecto.Schema
+
+        schema "some_tables" do
+          field :the_ulid_field, ExULID.Ecto.ULID
+        end
+      end
   """
   @behaviour Ecto.Type
   alias ExULID.ULID
