@@ -32,10 +32,10 @@ Instead, herein is proposed ULID:
 
 Add ExULID as a dependency in your project's `mix.exs`:
 
-```
+```ex
 def deps do
   [
-    {:ex_ulid, github: "omisego/ex_ulid"}
+    {:ex_ulid, "~> 0.1.0"}
   ]
 end
 ```
