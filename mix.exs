@@ -24,6 +24,7 @@ defmodule ExULID.MixProject do
   defp deps do
     [
       {:benchee, "~> 0.11", only: :dev},
+      {:ecto, "~> 2.1.6", optional: true},
       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
   end

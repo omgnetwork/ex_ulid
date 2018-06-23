@@ -1,5 +1,5 @@
 defmodule ExULID.CrockfordTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import ExULID.Crockford
 
   describe "encode32/1" do

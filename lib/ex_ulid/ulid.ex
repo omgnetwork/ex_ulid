@@ -3,13 +3,14 @@ defmodule ExULID.ULID do
   This module provides data encoding and decoding functions
   according to [ULID](https://github.com/ulid/spec).
   """
-  import ExULID.Crockford
+  alias ExULID.Crockford
 
   @max_time 281474976710655 # (2 ^ 48) - 1
 
   @doc """
   Generates a ULID.
   """
+  @spec generate() :: {:ok, String.t}
   def generate do
     :milli_seconds
     |> :os.system_time()
@@ -19,6 +20,7 @@ defmodule ExULID.ULID do
   @doc """
   Generates a ULID at the given timestamp (in millseconds).
   """
+  @spec generate(integer) :: {:ok, String.t} | {:error, String.t}
   def generate(time) when not is_integer(time) do
     {:error, "time must be an integer, got #{inspect(time)}"}
   end
@@ -30,11 +32,11 @@ defmodule ExULID.ULID do
   end
   def generate(time) do
     rand = :crypto.strong_rand_bytes(10)
-    encode(time, 10) <> encode(rand, 16)
+    {:ok, encode(time, 10) <> encode(rand, 16)}
   end
 
   defp encode(data, str_length) do
-    case encode32(data) do
+    case Crockford.encode32(data) do
       {:ok, encoded} ->
         format_encoded(encoded, str_length)
       {:error, _} = error ->
@@ -54,28 +56,40 @@ defmodule ExULID.ULID do
   end
 
   @doc """
+  Encodes a binary ULID into string.
+  """
+  @spec encode(<<_::128>>) :: {:ok, String.t} | {:error, String.t}
+  def encode(<<binary_time::48, binary_rand::80>>) do
+    {:ok, encode(binary_time, 10) <> encode(binary_rand, 16)}
+  end
+
+  @doc """
   Decodes the given ULID into a tuple of `{time, randomess}`,
   where `time` is the embedded unix timestamp in milliseconds.
   """
-  def decode(<<time::bytes-size(10), id::bytes-size(16)>>) do
+  @spec decode(String.t) :: {:ok, <<_::128>>} | {:error, String.t}
+  def decode(<<time::bytes-size(10), rand::bytes-size(16)>>) do
     case decode_time(time) do
       {:error, _} = error ->
         error
       decoded_time ->
-        {decoded_time, id}
+        {decoded_time, rand}
     end
   end
   def decode(ulid) do
     {:error, "the ULID must be 26 characters long, got #{inspect(ulid)}"}
   end
 
-  defp decode_time(ulid) do
-    decoded =
-      ulid
-      |> String.slice(0..9)
-      |> decode32()
+  @doc """
+  Converts a string ULID to binary ULID.
+  """
+  @spec to_binary(String.t) :: {:ok, binary}
+  def to_binary(string) when is_binary(string) and byte_size(string) == 26 do
+    Crockford.decode32(string)
+  end
 
-    case decoded do
+  defp decode_time(string_time) do
+    case Crockford.decode32(string_time) do
       {:ok, decoded} ->
         binary_to_time(decoded)
       {:error, _} = error ->
